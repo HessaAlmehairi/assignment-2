@@ -1,0 +1,264 @@
+#CLASSES
+
+
+# Class 1
+class EBook:
+    def __init__(self, title, author, publication_date, genre, price):
+        self.title = title
+        self.author = author
+        self.publication_date = publication_date
+        self.genre = genre
+        self.price = price
+
+    def __str__(self):
+        return f"EBook: {self.title} by {self.author} - Genre: {self.genre}, Price: DHS {self.price}"
+
+# Class 2
+class Fiction(EBook):
+    def __init__(self, title, author, publication_date, price, sub_genre):
+        super().__init__(title, author, publication_date, "Fiction", price)
+        self.sub_genre = sub_genre
+
+    def __str__(self):
+        return super().__str__() + f" - Sub-Genre: {self.sub_genre}"
+
+
+# Class 3
+class NonFiction(EBook):
+    def __init__(self, title, author, publication_date, price, subject_area):
+        super().__init__(title, author, publication_date, "Non-Fiction", price)
+        self.subject_area = subject_area
+
+    def __str__(self):
+        return super().__str__() + f" - Subject Area: {self.subject_area}"
+
+
+# Class 4
+class Catalog:
+    def __init__(self):
+        self.ebooks = []
+
+    def add_ebook(self, ebook):
+        self.ebooks.append(ebook)
+
+    def remove_ebook(self, ebook):
+        self.ebooks.remove(ebook)
+
+    def __str__(self):
+        return "\n".join(str(ebook) for ebook in self.ebooks)
+
+
+# Class 5
+class Account:
+    def __init__(self, username, password):
+        self.username = username
+        self.password = password
+
+    def __str__(self):
+        return f"Account Username: {self.username}"
+
+
+# Class 6
+class Customer:
+    def __init__(self, name, contact_info, is_loyalty_member=False):
+        self.name = name
+        self.contact_info = contact_info
+        self.is_loyalty_member = is_loyalty_member
+        self.account = None
+
+    def set_account(self, account):
+        self.account = account
+
+    def __str__(self):
+        loyalty_status = "Loyalty Member" if self.is_loyalty_member else "Regular Customer"
+        account_info = str(self.account) if self.account else "No Account"
+        return f"Customer: {self.name}, {loyalty_status}\n{account_info}"
+
+
+# Class 7
+class ShoppingCart:
+    def __init__(self):
+        self.items = []
+
+    def add_item(self, ebook):
+        self.items.append(ebook)
+
+    def remove_item(self, ebook):
+        self.items.remove(ebook)
+
+    def calculate_total_price(self):
+        return sum(item.price for item in self.items)
+
+    def __str__(self):
+        return "\n".join(str(item) for item in self.items)
+
+
+# Class 8
+class Order:
+    def __init__(self, order_id, customer, cart):
+        self.order_id = order_id
+        self.customer = customer
+        self.cart = cart
+        self.order_date = "2024-11-04"  # Placeholder for order date
+        self.total_price = self.calculate_total_price()
+
+    def calculate_total_price(self):
+        return self.cart.calculate_total_price()
+
+    def __str__(self):
+        return f"Order ID: {self.order_id}\nCustomer: {self.customer.name}\nTotal Price: DHS {self.total_price:.2f}"
+
+
+# Class 9
+class Discount:
+    def __init__(self, discount_type: str, value: float):
+        self.discount_type = discount_type  # Type of discount (e.g., "Loyalty Program")
+        self._value = value  # Protected attribute, can be accessed by subclasses
+
+    def apply_discount(self, amount: float) -> float:
+        # Applies the discount to a given amount
+        return amount * (1 - self._value) if self._value < 1 else amount - self._value
+
+    def __str__(self) -> str:
+        # String representation of the discount
+        discount_format = f"{self._value * 100:.0f}%" if self._value < 1 else f"${self._value}"
+        return f"Discount ({self.discount_type}): {discount_format}"
+
+
+# Class 10
+class LoyaltyProgram(Discount):
+    def __init__(self, members: list):
+        super().__init__("Loyalty Program", 0.1)
+        self.members = members
+
+    def is_member(self, customer) -> bool:
+        return customer in self.members
+
+    def __str__(self) -> str:
+        return f"Loyalty Program Discount: {self._value * 100}% for Members: {', '.join(member.name for member in self.members)}"
+
+
+# Class 11
+class VAT:
+    def __init__(self, rate=0.08):
+        self.rate = rate
+
+    def calculate_vat(self, amount):
+        return amount * self.rate
+
+    def __str__(self):
+        return f"VAT Rate: {self.rate * 100}%"
+
+# Class 12
+class Invoice:
+    def __init__(self, invoice_id, order, vat):
+        self.invoice_id = invoice_id
+        self.order = order
+        self.vat = vat
+        self.final_amount = self.calculate_final_amount()
+
+    def calculate_final_amount(self):
+        subtotal = self.order.total_price
+        vat_amount = self.vat.calculate_vat(subtotal)
+        return subtotal + vat_amount
+
+    def __str__(self):
+        vat_amount = self.vat.calculate_vat(self.order.total_price)
+        return (f"Invoice ID: {self.invoice_id}\n"
+                f"Subtotal: DHS {self.order.total_price:.2f}\n"
+                f"VAT: DHS {vat_amount:.2f}\n"
+                f"Total: DHS {self.final_amount:.2f}")
+
+
+# Class 13
+class Payment:
+    def __init__(self, payment_id, order, payment_amount):
+        self.payment_id = payment_id
+        self.order = order
+        self.payment_amount = payment_amount
+
+    def is_payment_complete(self):
+        return self.payment_amount >= self.order.total_price
+
+    def __str__(self):
+        status = "Complete" if self.is_payment_complete() else "Pending"
+        return f"Payment ID: {self.payment_id}, Status: {status}, Amount Paid: ${self.payment_amount:.2f}"
+
+
+
+#OBJECTS
+
+
+from classes import EBook
+from classes import Fiction
+from classes import NonFiction
+from classes import Catalog
+from classes import Account
+from classes import Customer
+from classes import ShoppingCart
+from classes import Order
+from classes import Discount
+from classes import LoyaltyProgram
+from classes import VAT
+from classes import Invoice
+from classes import Payment
+
+
+# Object 1
+ebook1 = EBook("The Great Gatsby", "F. Scott Fitzgerald", "1925", "Fiction", 10.99)
+print(ebook1)
+
+# Object 2
+fiction_book = Fiction("The Hobbit", "J.R.R. Tolkien", "1937", 15.99, "Fantasy")
+print(fiction_book)
+
+# Object 3
+non_fiction_book = NonFiction("A Brief History of Time", "Stephen Hawking", "1988", 12.99, "Science")
+print(non_fiction_book)
+
+# Object 4
+catalog = Catalog()
+catalog.add_ebook(fiction_book)
+catalog.add_ebook(non_fiction_book)
+print("Catalog contents:")
+print(catalog)
+
+# Object 5 & 6
+account1 = Account("HALM", "password123")
+customer1 = Customer("Hessa A", "halm45@gmail.com", True)
+customer1.set_account(account1)
+print(customer1)
+
+# Object 7
+cart = ShoppingCart()
+cart.add_item(fiction_book)
+cart.add_item(non_fiction_book)
+print("Shopping Cart:")
+print(cart)
+print("Total Price: DHS", cart.calculate_total_price())
+
+# Object 8
+order = Order(327, customer1, cart)
+print(order)
+
+# Object 9
+loyalty_discount = Discount("Loyalty", 0.1)  # 10% discount
+print(loyalty_discount)
+print("Discounted Amount:", loyalty_discount.apply_discount(order.total_price))
+
+# Object 10
+loyalty_program = LoyaltyProgram([customer1])
+print("Is loyalty member:", loyalty_program.is_member(customer1))
+print("Discounted Price for Member:", loyalty_program.apply_discount(order.total_price))
+
+# Object 11
+vat = VAT(rate=0.08)
+
+# Object 12
+invoice = Invoice(1001, order, vat)
+print(invoice)
+
+# Object 13
+payment = Payment(5001, order, invoice.final_amount)
+print(payment)
+print("Payment Complete:", payment.is_payment_complete())
